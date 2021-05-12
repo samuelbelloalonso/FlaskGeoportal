@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>TFG: {{titulo}}</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <!-- <link rel="stylesheet" href="/static/main.css"/> -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+    crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js">
+  </script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js">
+  </script>
+  <style>
+    #map {
+      height: 550px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- <nav class="navbar navbar-expand-lg navbar-dark bg-dark" role="navigation">
+    <div class="container-fluid">
+      <header>
+        <a class="navbar-brand" href="#">Operaciones TFG</a>
+      </header>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            {% if current_user.is_anonymous %}
+            <a href="{{ url_for('login') }}">Login</a>
+            {% else %}
+            <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+            {% endif %}
+          </li>
+        </ul>
+        
+      </div>
+    </div>
+  </nav> -->
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark" role="navigation">
+    <header>
+      <a class="navbar-brand" href="#">Operaciones TFG</a>
+    </header>
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        {% if current_user.is_anonymous %}
+        <a href="{{ url_for('login') }}">Login</a>
+        {% else %}
+        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+        {% endif %}
+      </li>
+
+    </ul>
+  </nav>
+
+  <main class="container-fluid">
+    <div class="row">
+      <section class="col-6">
+        <div id="map"></div>
+        <!-- Comentario debajo del mapa -->
+      </section>
+      <aside class="col">
+        <header>
+          <h3>Info:</h3>
+        </header>
+        {% block asideForm %} {% endblock %}
+      </aside>
+    </div>
+    <!-- <input type="button" onclick="resetMapZoom()" value="Reiniciar posicion del mapa" /> -->
+  </main>
+
+  <!-- <footer>
+    <section>Pie de página</section>
+  </footer> -->
+
+  <script>
+    var map = L.map("map", {
+      center: [42.7674234, -7.8984065],
+      zoom: 7.5,
+    });
+
+    // var mapaBaseOSM = {
+    //   OSM: L.tileLayer(
+    //     'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}',
+    //     {
+    //       layerName: "base",
+    //       maxzoom: 30,
+    //       transparent: true,
+    //     }
+    //   ).addTo(map)
+    // };
+
+    var mapaBaseOSM = {
+      OSM: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}', {
+        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        subdomains: 'abcd',
+        minZoom: 0,
+        maxZoom: 20,
+        ext: 'png'
+      }).addTo(map)
+    }
+
+
+  </script>
+
+  {% block script %} {% endblock %}
+</body>
+
+</html>

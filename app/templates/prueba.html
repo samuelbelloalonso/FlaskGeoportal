@@ -1,0 +1,125 @@
+{% extends "/base/base.html" %}
+
+{% block asideForm %}
+<!-- {{ mapa }} -->
+
+{% endblock %}
+
+{% block script %}
+<script>
+
+    var myStyle = {
+        "color": "#0477c2",
+        "weight": 1,
+        "opacity": 1
+    };
+
+    var myStyle2 = {
+        "color": "#6fa1f8",
+        "weight": 1,
+        "opacity": 1
+    };
+
+    var myStyle3 = {
+        "color": "#eb4b85",
+        "weight": 1,
+        "opacity": 1
+    };
+
+    var myStyle4 = {
+        "color": "#b3f6f2",
+        "weight": 1,
+        "opacity": 1
+    };
+
+    var myStyle5 = {
+        "color": "#a97f8f",
+        "weight": 1,
+        "opacity": 1
+    };
+
+    var myStyle6 = {
+        "color": "#b07eb4",
+        "weight": 1,
+        "opacity": 1
+    };
+    var myStyle7 = {
+        "color": "#e5c08b",
+        "weight": 1,
+        "opacity": 1
+    };
+
+    var myStyle8 = {
+        "color": "#be0f34",
+        "weight": 1,
+        "opacity": 1
+    };
+    var myStyle9 = {
+        "color": "#ffae19",
+        "weight": 1,
+        "opacity":
+            1
+    };
+
+    var myStyle10 = {
+        "color": "#000035",
+        "weight": 1,
+        "opacity": 1
+    };
+
+    var myStyle11 = {
+        "color": "#3bb446",
+        "weight": 1,
+        "opacity": 1
+    };
+
+    tipoAutoestrada = "AUTOESTRADA_AUTOVIA"
+    tipoCorredor = "CORREDOR"
+    tipoDeputacion = "DEPUTACION"
+    tipoOutrasEstradas = "OUTRAS_ESTRADAS"
+    tipoPista = "PISTA"
+    tipoPrimariaBasica = "PRIMARIA_BASICA"
+    tipoPrimariaComplement = "PRIMARIA_COMPLEMENT"
+    tipoRedeEstatal = "REDE_ESTATAL"
+    tipoRua = "RUA"
+    tipoSecundaria = "SECUNDARIA"
+    tipoViaRapida = "VIA_RAPIDA"
+
+    var tramo = {{ mapa | safe }}
+
+    function filtroAutoestrada(feature) {
+        if (feature.categoria === tipoAutoestrada) return true
+    }
+
+    AUTOESTRADA_AUTOVIA = L.geoJSON(tramo, {
+        style: myStyle
+    })
+
+    // var filtro = L.geoJson(tramo, { filter: filtroAutoestrada }).addTo(map);
+    var overlays = {
+        "AUTOESTRADA_AUTOVIA": AUTOESTRADA_AUTOVIA
+    }
+    L.control.layers(mapaBaseOSM, overlays).addTo(map)
+
+    // var tramo = { "type": "Feature", "id": 1, "geometry": { "type": "MultiLineString", "coordinates": [[[-7.496075207, 42.967003111], [-7.495098902, 42.967534938], [-7.494655317, 42.967662196], [-7.494198237, 42.967780076], [-7.493813903, 42.96784173], [-7.49331374, 42.967863737], [-7.492814042, 42.967866687], [-7.492464, 42.967852546], [-7.491900717, 42.967802239], [-7.491370102, 42.967742828], [-7.490664233, 42.96768587], [-7.489288971, 42.967672489]]] } }
+    // tipo = "AUTOESTRADA_AUTOVIA"
+    // function mifiltro(feature) {
+    //     // if (feature.categoria === tipo && feature.id <= 30) return true
+    // }
+
+    // var filtro = L.geoJson(tramo, { filter: mifiltro }).addTo(map);
+
+
+
+
+    // a = L.geoJSON(tramo, {
+    //     style: myStyle
+    // })
+
+
+    // var overlays = {
+    //     "a": a,
+    // }
+    // L.control.layers(mapaBaseOSM, overlays).addTo(map);
+</script>
+{% endblock %}

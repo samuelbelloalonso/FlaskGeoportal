@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> TFG: {{titulo}}</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <!-- <link rel="stylesheet" href="/static/main.css"/> -->
+    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</head>
+
+
+
+<body>
+    <H3>Mostrando cara B del tramo {{ tramoid }}</H3>
+    <div class="accordion accordion-flush" id="accordionFlushExample">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="flush-headingOne">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                    Pavimento
+                </button>
+            </h2>
+            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne"
+                data-bs-parent="#accordionFlushExample">
+                <div class="accordion-body">
+                    <form name=formulario1>
+                        <input type="hidden" name="tramo" value="{{tramoid}}">
+                        <input type="checkbox" value='operacion pavimento 1' name='acciones[pavimento][1]'>
+                        <label for="operacionPavimento1">operacion pavimento 1</label>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="flush-headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                    Vegetación
+                </button>
+            </h2>
+            <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo"
+                data-bs-parent="#accordionFlushExample">
+                <div class="accordion-body">
+                    <form name=formulario2>
+                        <input type="checkbox" value='operacion vegetacion 3' name='acciones[vegetacion][1]'>
+                        <label for="operacionVegetacion1">operacion vegetacion 1</label>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="flush-headingThree">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+                    Vialidad invernal
+                </button>
+            </h2>
+            <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree"
+                data-bs-parent="#accordionFlushExample">
+                <div class="accordion-body">
+                    <form name=formulario3>
+                        <input type="checkbox" value='operacion vialidad invernal 1' name='acciones[vialidad][1]'>
+                        <label for="operacionVialidadInvernal1">operacion vialidad invernal 1</label>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="flush-headingFour">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#flush-collapseFour">
+                    Obras específicas
+                </button>
+            </h2>
+            <div id="flush-collapseFour" class="accordion-collapse collapse" aria-labelledby="flush-headingFour"
+                data-bs-parent="#accordionFlushExample">
+                <div class="accordion-body">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="flush-headingfive">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#flush-collapsefive">
+                                Obras específicas 1
+                            </button>
+                        </h2>
+                        <div id="flush-collapsefive" class="accordion-collapse collapse"
+                            aria-labelledby="flush-headingfive" data-bs-parent="#flush-collapseFour">
+                            <div class="accordion-body">
+                                <form name=formulario5>
+                                    <input type="checkbox" value='operacion especifica 1'
+                                        name='acciones[especificas][1]'>
+                                    <label for="operacionEspecifica1">operacion especifica 1</label>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="flush-headingsix">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#flush-collapsesix">
+                                Obras específicas 2
+                            </button>
+                        </h2>
+                        <div id="flush-collapsesix" class="accordion-collapse collapse"
+                            aria-labelledby="flush-headingsix" data-bs-parent="#flush-collapsesix">
+                            <div class="accordion-body">
+                                <form name=formulario6>
+                                    <input type="checkbox" value='operacion especifica 2'
+                                        name='acciones[especificas][2]'>
+                                    <label for="operacionEspecifica2">operacion especifica 2</label>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <input type="button" value="modificar" onclick="formInsertAjax()"></input>
+
+    <script>
+        function formInsertAjax() {
+            $.ajax({
+                url: "{{url_for('forminsert')}}",
+                data: $("form").serialize(),
+                method: "POST",
+                success: function () {
+                    self.close()
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>
