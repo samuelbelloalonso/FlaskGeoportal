@@ -1,0 +1,38 @@
+    #map {
+      /* height: 550px; */
+      height: 90vh;
+    }
+ 
+    /* .tablaResultados {
+        width: 100%;
+    } */
+
+    .tablaScroll table {
+        width: 100%;
+    }
+
+    .tablaScroll thead {
+        display: table;
+        width: calc(100% - 17px);
+    }
+
+    .tablaScroll tbody {
+        display: block;
+        height: 280px;
+        overflow-y: scroll;
+    }
+
+    .tablaScroll tr {
+        display: table;
+        width: 100%;
+    }
+
+    .tablaScroll th,
+    .tablaScroll td {
+        width: 16%;
+        word-break: keep-all;
+    }
+
+    #tablaResultadosComponentes tbody{
+        height: 50vh
+    }

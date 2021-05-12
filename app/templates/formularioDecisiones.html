@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> TFG: {{titulo}}</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <!-- <link rel="stylesheet" href="/static/main.css"/> -->
+    <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</head>
+
+
+
+<body>
+    <!-- <H3>Mostrando cara B del tramo {{ tramoid }}</H3> -->
+    <H3>Seleccione las acciones oportunas: </H3>
+    <div class="accordion accordion-flush" id="accordionFlushExample">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="flush-headingOne">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                    Obras de fábrica: de pasos y puentes
+                </button>
+            </h2>
+            <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne"
+                data-bs-parent="#accordionFlushExample">
+                <div class="accordion-body">
+                    <form name=formulario1>
+                        <input type="hidden" name="componenteid" value="{{componenteid}}">
+                        <input type="checkbox" value='Reposición-reparación de juntas de dilatación'
+                            name='acciones-obrasFabrica-1-1'>
+                        <label for="obrasFabrica">Reposición-reparación de juntas de dilatación</label>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="flush-headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                    Instalación: túneles
+                </button>
+            </h2>
+            <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo"
+                data-bs-parent="#accordionFlushExample">
+                <div class="accordion-body">
+                    <form name=formulario2>
+                        <input type="checkbox" value='Revisión-reparación de elementos estructurales'
+                            name='acciones-instalacion-1-2'>
+                        <label for="instalacion">Revisión-reparación de elementos estructurales</label>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="flush-headingThree">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+                    Equipamiento y seguridad: señalización vertical
+                </button>
+            </h2>
+            <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree"
+                data-bs-parent="#accordionFlushExample">
+                <div class="accordion-body">
+                    <form name=formulario3>
+                        <input type="checkbox" value='Limpieza de señal o cartel' name='acciones-equipamiento-1-3'>
+                        <label for="equipamiento-1-3">Limpieza de señal o cartel</label>
+                    </form>
+                </div>
+            </div>
+
+            <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree"
+                data-bs-parent="#accordionFlushExample">
+                <div class="accordion-body">
+                    <form name=formulario4>
+                        <input type="checkbox" value='Reposición de señal o cartel' name='acciones-equipamiento-2-3'>
+                        <label for="equipamiento2">Reposición de señal o cartel</label>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <input type="button" class="btn btn-primary" value="modificar" onclick="formInsertAjax()"></input>
+
+    <script>
+        function formInsertAjax() {
+            $.ajax({
+                url: "{{url_for('decisionesdef')}}",
+                data: $("form").serialize(),
+                method: "POST",
+                success: function () {
+                    self.close()
+                }
+            })
+        }
+    </script>
+
+</body>
+
+</html>

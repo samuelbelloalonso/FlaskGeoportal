@@ -1,0 +1,16 @@
+{
+    "git.ignoreLimitWarning": true,
+    "python.pythonPath": "flask\\Scripts\\python.exe",
+    "editor.formatOnSave": true,
+    "workbench.editor.highlightModifiedTabs": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.enabled": true,
+    "python.linting.flake8Args": [
+        "--ignore=E501,",
+        "--format='%(path)s: :%(row)d,%(col)d: :%(code)s: :%(text)s'"
+    ],
+    "python.formatting.provider": "black",
+    "python.languageServer": "Pylance",
+    "editor.semanticHighlighting.enabled": false
+}
