@@ -1,0 +1,75 @@
+{% extends "/base/base.html" %}
+
+{% block script %}
+
+<!-- javascript parte del mapa -->
+<script>
+
+    var overlayMaps = {
+    {% for tramoJson in tramosJson %}
+    '{{tramoJson.properties.Tramo}}': L.geoJSON({{ tramoJson| safe }}, {
+        {% if tramoJson.properties.Tramo == 'tramo1' %}
+    style: tramo1Style
+    {% else %}
+    style: tramo2Style
+    {% endif %}
+
+    }),
+    {% endfor %}
+    
+    }
+
+    L.control.layers(mapaBaseOSM, overlayMaps).addTo(map);
+
+</script>
+
+
+
+{% endblock %}
+
+{% block asideForm %}
+
+<!--SELECCIONAR CATEGORIA-->
+<!-- Formulario -->
+<form action="{{ url_for(request.endpoint) }}" method="POST">
+    <div class="mb-3">
+        <label for="tramo" class="form-label">Seleccione un tramo:</label>
+        <select name="tramo" class="form-select">
+            {% for tramo in tramosJson %}
+            <option value="{{tramo.properties.id}}">{{tramo.properties.Tramo}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div>
+        <button id="ajaxTrigger_form" type="button" class="btn btn-primary">Enviar</button>
+    </div>
+</form>
+<br></br>
+
+
+<div id="divResultados" style="display:none">
+    <table id="tablaResultadosActivos" class="table table-striped table-hover tablaScroll">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Id</th>
+                <th scope="col">Activo</th>
+                <th scope="col">Tramo</th>
+                <th scope="col">Localizar</th>
+                <th scope="col">Ver componentes</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+
+
+
+<!-- <div id="divAcciones" style="display:none" class="scroll border rounded overflow-auto"> -->
+<div id="divAcciones" style="display:none">
+    <div id="injectTarget" style="height:330px"></div>
+</div>
+
+{% endblock %}

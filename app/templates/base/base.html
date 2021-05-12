@@ -18,37 +18,18 @@
   </script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js">
   </script>
-  <style>
-    #map {
-      height: 550px;
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}" type="text/css">
+  <script type=text/javascript src="{{
+    url_for('static', filename='js/main.js') }}"></script>
+
+
 </head>
 
 <body>
-  <!-- <nav class="navbar navbar-expand-lg navbar-dark bg-dark" role="navigation">
-    <div class="container-fluid">
-      <header>
-        <a class="navbar-brand" href="#">Operaciones TFG</a>
-      </header>
-      <div class="collapse navbar-collapse">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item">
-            {% if current_user.is_anonymous %}
-            <a href="{{ url_for('login') }}">Login</a>
-            {% else %}
-            <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-            {% endif %}
-          </li>
-        </ul>
-        
-      </div>
-    </div>
-  </nav> -->
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark" role="navigation">
     <header>
-      <a class="navbar-brand" href="#">Operaciones TFG</a>
+      <a class="navbar-brand" href="#">Geoportal</a>
     </header>
     <ul class="navbar-nav ml-auto">
       <li class="nav-item">
@@ -70,7 +51,7 @@
       </section>
       <aside class="col">
         <header>
-          <h3>Info:</h3>
+          <h3>Panel de detalles</h3>
         </header>
         {% block asideForm %} {% endblock %}
       </aside>
@@ -86,31 +67,49 @@
     var map = L.map("map", {
       center: [42.7674234, -7.8984065],
       zoom: 7.5,
+      transparent: false,
     });
 
-    // var mapaBaseOSM = {
-    //   OSM: L.tileLayer(
-    //     'https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}',
-    //     {
-    //       layerName: "base",
-    //       maxzoom: 30,
-    //       transparent: true,
-    //     }
-    //   ).addTo(map)
-    // };
+
+
+    var OSM1 = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}', {
+      attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      subdomains: 'abcd',
+      minZoom: 0,
+      maxZoom: 20,
+      ext: 'png'
+    }).addTo(map);
+
+    var OSM2 = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxzoom: 30,
+      transparent: true
+    });
+
 
     var mapaBaseOSM = {
-      OSM: L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.{ext}', {
-        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        subdomains: 'abcd',
-        minZoom: 0,
-        maxZoom: 20,
-        ext: 'png'
-      }).addTo(map)
+      "Mapa base en blanco": OSM1,
+      "Mapa base en color": OSM2
+    };
+
+
+    // L.control.layers(mapaBaseOSM).addTo(map);
+
+    // var mapaBaseOSM = {
+    //   'OSM': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    //     maxzoom: 30,
+    //     transparent: true
+    //   }).addTo(map)
+    // };
+
+    function resetMapZoom() {
+      map.setView([42.7674234, -7.8984065], 7.5)
     }
 
 
   </script>
+
+  <button id="buttonReset" onclick="resetMapZoom()" class="btn btn-primary btn-sm">Resetear Zoom</button>
+  <!-- <a href="#" onclick="resetMapZoom()"> Resetear zoom</a> -->
 
   {% block script %} {% endblock %}
 </body>

@@ -3,23 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from app import login
 from sqlalchemy.orm import relationship, backref
-
-
-class estrada_l_25(db.Model):
-    id = db.Column("ogc_fid", db.Integer, primary_key=True)
-    tipo = db.Column(db.String(50))
-    categoria = db.Column(db.String(50))
-    matricula = db.Column(db.String(50))
-
-    @property
-    def serialize(self):
-        """Return object data in easily serializable format"""
-        return {
-            "id": self.id,
-            "tipo": self.tipo,
-            "categoria": self.categoria,
-            "matricula": self.matricula,
-        }
+from geoalchemy2 import Geometry
 
 
 class User(UserMixin, db.Model):
@@ -27,7 +11,6 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-    tramos = relationship("Tramo", secondary="tramo_user")
 
     def __repr__(self):
         return "<User {}>".format(self.username)
@@ -39,69 +22,14 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
 
-class Tramo(db.Model):
-    __tablename__ = "tramo"
+class accion(db.Model):
+    __tablename__ = "accion"
+
     id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(64), index=True)
-    descripcion = db.Column(db.String(128))
-    zona = db.Column(db.String(64))
-    users = relationship("User", secondary="tramo_user")
-
-    def __repr__(self):
-        return "<Tramo {}>".format(self.nombre)
-
-
-class Tramo_user(db.Model):
-    __tablename__ = "tramo_user"
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    tramo_id = db.Column(db.Integer, db.ForeignKey("tramo.id"))
-
-    user = relationship(User, backref=backref(
-        "tramo_user", cascade="all, delete-orphan"))
-    tramo = relationship(Tramo, backref=backref(
-        "tramo_user", cascade="all, delete-orphan"))
-
-
-class Activo(db.Model):
-    __tablename__ = "activo"
-    id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(64), index=True)
-    descripcion = db.Column(db.String(128))
-    idtramo = db.Column(db.Integer, db.ForeignKey("tramo.id"))
-
-    def __repr__(self):
-        return "<Activo {}>".format(self.nombre)
-
-
-class Activo(db.Model):
-    __tablename__ = "componente"
-    id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(64), index=True)
-    descripcion = db.Column(db.String(128))
-    idactivo = db.Column(db.Integer, db.ForeignKey("activo.id"))
-
-    def __repr__(self):
-        return "<Componente {}>".format(self.nombre)
-
-
-class decisiones(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    tramoId = db.Column(db.Integer)
-    activo = db.Column(db.String(50))
-    componente = db.Column(db.String(50))
-    accion = db.Column(db.String(50))
-
-    @property
-    def serialize(self):
-        """Return object data in easily serializable format"""
-        return {
-            "id": self.id,
-            "tramoId": self.tramoId,
-            "activo": self.activo,
-            "componente": self.componente,
-            "accion": self.accion,
-        }
+    nombre = db.Column(db.String(64))
+    fecha = db.Column(db.DATETIME)
+    idcomponente = db.Column(db.Integer)
+    idtipodeaccion = db.Column(db.Integer)
 
 
 @login.user_loader

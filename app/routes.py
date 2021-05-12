@@ -2,21 +2,26 @@ from app import app
 from app.forms import LoginForm
 from flask_login import current_user, login_user, logout_user
 from flask_login import LoginManager, login_required
-from flask import render_template, flash, redirect, url_for, request, redirect, jsonify, make_response
+from datetime import date
+from pprint import pprint
+from flask import (
+    render_template,
+    flash,
+    redirect,
+    url_for,
+    request,
+    redirect,
+    jsonify,
+    make_response,
+)
 from sqlalchemy import text
 from sqlalchemy.orm import sessionmaker
 import simplejson as json
 
-from app.models import User, Tramo, Tramo_user, estrada_l_25, decisiones
+from app.models import User, accion
 from app import db
 from app.forms import RegistrationForm
 
-
-# @app.route("/")
-# @app.route("/index")
-# @login_required
-# def index():
-#     return "Hello, World!"
 
 Session = sessionmaker()
 session = Session()
@@ -24,159 +29,54 @@ session = Session()
 
 @app.route("/")
 @app.route("/index")
-@app.route("/consultasFilter", methods=["GET", "POST"])
+@app.route("/geoportal", methods=["GET", "POST"])
 @login_required
-def consultasConFilter():
-    reslist = []
-    categorias = []
-
+def consultasGeoportal():
+    req = request.form
     if request.method == "POST":
+
         # obtenemos resultados y los metemos en una var
-        req = request.form
-
-        reslistUser = Tramo_user.query.filter(
-            Tramo_user.user_id == current_user.id)
-        listaIdTramos = []
-        for x in reslistUser:
-            listaIdTramos.append(x.tramo_id)
-
-        # for x in reslistUser:
-        #     print(x.user_id, x.tramo_id)
-
-        reslist = estrada_l_25.query.filter_by(
-            categoria=req["categoria"]).filter(estrada_l_25.id.in_(listaIdTramos))
-
-        paginaResultado = request.args.get("page", 1, type=int)
-        metadata = [
-            {
-                "pages": reslist.paginate(page=paginaResultado).pages,
-                "page": reslist.paginate(page=paginaResultado).page,
-                "total": reslist.paginate(page=paginaResultado).total,
-                "per_page": reslist.paginate(page=paginaResultado).per_page,
-                "has_next": reslist.paginate(page=paginaResultado).has_next,
-                "has_prev": reslist.paginate(page=paginaResultado).has_prev,
-                "prev_num": reslist.paginate(page=paginaResultado).prev_num,
-                "next_num": reslist.paginate(page=paginaResultado).next_num,
-            }
-        ]
-
-        resultadoConsulta = jsonify(
-            metadata=metadata,
-            json_list=[
-                i.serialize for i in reslist.paginate(page=paginaResultado).items
-            ],
-        )
-
-        return resultadoConsulta
-
-    # consulta para obtener las categorías
-    consulta_categoria = estrada_l_25.query.distinct("categoria")
-    estradas_categorias = []
-    for categoria in consulta_categoria:
-        estradas_categorias.append(categoria.categoria)
-
-    return render_template(
-        "consultasFilter.html",
-        tiposEstrada=estradas_categorias,
-        titulo="Consulta completa",
-    )
-
-
-@app.route("/consultas", methods=["GET", "POST"])
-@login_required
-def consultasp1():
-    reslist = []
-    categorias = []
-
-    if request.method == "POST":
-        # obtenemos resultados y los metemos en una var
-        req = request.form
-        reslist = estrada_l_25.query.filter_by(categoria=req["categoria"])
-        paginaResultado = request.args.get("page", 1, type=int)
-        metadata = [
-            {
-                "pages": reslist.paginate(page=paginaResultado).pages,
-                "page": reslist.paginate(page=paginaResultado).page,
-                "total": reslist.paginate(page=paginaResultado).total,
-                "per_page": reslist.paginate(page=paginaResultado).per_page,
-                "has_next": reslist.paginate(page=paginaResultado).has_next,
-                "has_prev": reslist.paginate(page=paginaResultado).has_prev,
-                "prev_num": reslist.paginate(page=paginaResultado).prev_num,
-                "next_num": reslist.paginate(page=paginaResultado).next_num,
-            }
-        ]
-
-        resultadoConsulta = jsonify(
-            metadata=metadata,
-            json_list=[
-                i.serialize for i in reslist.paginate(page=paginaResultado).items
-            ],
-        )
-
-        return resultadoConsulta
-
-    # consulta para obtener las categorías
-    consulta_categoria = estrada_l_25.query.distinct("categoria")
-    estradas_categorias = []
-    for categoria in consulta_categoria:
-        estradas_categorias.append(categoria.categoria)
-
-    return render_template(
-        "consultas.html",
-        tiposEstrada=estradas_categorias,
-        titulo="Consulta completa",
-    )
-
-
-@app.route("/consultasTramos", methods=["GET", "POST"])
-@login_required
-def consultasTramosdef():
-    if request.method == "POST":
-        # obtenemos resultados y los metemos en una var
-        req = request.form
-        reslist = estrada_l_25.query.filter_by(categoria=req["categoria"])
-        texto = text(f""" SELECT json_build_object(
-                'type', 'Feature',
-                'id', ogc_fid,
-                'tipo',tipo,
-                'matricula', matricula,
-                'categoria', categoria,
-                'geometry', ST_AsGeoJSON(ST_Transform(wkb_geometry,4326))::json
+        texto = text(
+            f""" SELECT json_build_object(
+                'id',id,
+                'nombre_activo', nombre,
+                'id_tramo', idtramo
             )
-            FROM estrada_l_25
-            where categoria = '{req["categoria"]}'
-            """)
+            FROM activos2 a where a.idtramo = {req["tramo"]}
+            """
+        )
 
         resultado = db.engine.execute(texto)
-        # arrayResultado = jsonify(
-        #     json_list=[i.serialize for i in resultado.fetchall()])
-        # arrayResultado = [row[0] for row in resultado.fetchall()]
+        arrayJsons = [row[0] for row in resultado.fetchall()]
+        return jsonify(tramos=arrayJsons)
 
-        reslist2 = jsonify(json_list=[i.serialize for i in reslist.all()])
-        return reslist2
-
-    # Obtener las categorías para el seleccionar categorias.
-    texto = text(""" SELECT json_build_object(
-            'categoria', categoria
+    texto = text(
+        """ SELECT json_build_object(
+        'type', 'Feature',
+        'geometry',  ST_AsGeoJSON(ST_Transform(geom, 4326),15,0)::json,
+        'properties', json_build_object(
+            'Tramo', nombre,
+            'id', id
         )
-        FROM estrada_l_25
-        group by categoria
-        """)
+    )
+    FROM tramos2
+    group by nombre, geom,id
+    order by nombre
+    """
+    )
     resultado = db.engine.execute(texto)
-    arrayResultado = [row[0] for row in resultado.fetchall()]
-    arrayResultadoLimpio = [elemento["categoria"]
-                            for elemento in arrayResultado]
+    arrayResultado1 = [row[0] for row in resultado.fetchall()]
+
     return render_template(
-        "consultasTramos.html",
-        tiposEstrada=arrayResultadoLimpio,
-        titulo="Consulta completa",
+        "geoportal.html",
+        tramosJson=arrayResultado1,
     )
 
 
-@ app.route("/login", methods=["GET", "POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for("consultasTramosdef"))
+        return redirect(url_for("consultasGeoportal"))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
@@ -186,14 +86,14 @@ def login():
             return redirect(url_for("login"))
         # print('logueando...')
         login_user(user, remember=form.remember_me.data)
-        return redirect(url_for("consultasTramosdef"))
+        return redirect(url_for("consultasGeoportal"))
     return render_template("login.html", title="Sign In", form=form)
 
 
-@ app.route("/register", methods=["GET", "POST"])
+@app.route("/register", methods=["GET", "POST"])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for("consultasTramosdef"))
+        return redirect(url_for("consultasGeoportal"))
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User(username=form.username.data)
@@ -205,110 +105,190 @@ def register():
     return render_template("register.html", title="Register", form=form)
 
 
-@ app.route("/logout")
+@app.route("/logout")
 # @login_required
 def logout():
     logout_user()
     return redirect(url_for("login"))
 
 
-@ app.route("/formularioInsert", methods=["GET", "POST"])
-# @login_required
-def forminsert():
-    # si hay POST es que el usuario ya recibió el form y nos lo envia
-    if request.method == "POST":
-        tramo_a_editar = request.form["tramo"]
+@app.route("/consultasComponentes", methods=["GET"])
+def consultasComponentesdef():
+    if request.method == "GET":
+        # obtenemos resultados y los metemos en una var
+        texto = text(
+            f""" SELECT json_build_object(
+                'type', 'Feature',
+                'id', id,
+                'nombre', nombre,
+                'id_activo', idactivo
+            )
+            FROM componentes2
+            where idactivo = {request.args.get("activo",  type=int)}
+            """
+        )
 
-        for key, accion in request.form.items():
+        resultado = db.engine.execute(texto)
+        arrayJsons = [row[0] for row in resultado.fetchall()]
+
+    return render_template(
+        "consultasComponentes.html",
+        activoid=request.args.get("activo", 1, type=int),
+        resultado=arrayJsons,
+    )
+
+
+@app.route("/consultasKpisConMediciones", methods=["GET"])
+def consultasKpisConMedicionedef():
+    if request.method == "GET":
+        # obtenemos resultados y los metemos en una var
+
+        texto = text(
+            f""" SELECT json_build_object(
+                'type', 'Feature',
+                'idKpi', k.id,
+                'nombreKpi',k.nombre,
+                'idMedicion', m.id,
+                'valor', m.valor,
+                'idComponente', idcomponente
+            )
+            FROM medicion m join kpi k on m.idkpi = k.id
+            where idcomponente = {request.args.get("componente",  type=int)}
+            """
+        )
+
+        resultado = db.engine.execute(texto)
+        arrayJsons = [row[0] for row in resultado.fetchall()]
+
+    return render_template(
+        "consultasKpisConMediciones.html",
+        activoid=request.args.get("activo", type=int),
+        componenteid=request.args.get("componente", 1, type=int),
+        resultado=arrayJsons,
+    )
+
+
+@app.route("/componentesGeojson", methods=["GET"])
+def consultasComponentesGeojsondef():
+    if request.method == "GET":
+        # obtenemos resultados y los metemos en una var
+        texto = text(
+            f""" SELECT json_build_object(
+                'type', 'Feature',
+                'geometry',  ST_AsGeoJSON(ST_Transform(geom, 4326),15,0)::json
+            )
+            FROM componentes2
+            where id = {request.args.get("id_componente",  type=int)}
+            """
+        )
+
+        resultado = db.engine.execute(texto)
+        arrayJsons = [row[0] for row in resultado.fetchall()]
+        resultado = jsonify(arrayJsons)
+
+    return resultado
+
+
+@app.route("/activosGeojson", methods=["GET"])
+def paso2323():
+
+    texto = text(
+        f""" SELECT json_build_object(
+            'type', 'Feature',
+            'geometry',  ST_AsGeoJSON(ST_Transform(geom, 4326),15,0)::json,
+            'properties', json_build_object(
+            )
+        )
+        FROM activos2
+        where id = {request.args.get("id_tramo", type=int)}
+
+        """
+    )
+
+    resultado = db.engine.execute(texto)
+    arrayJsons = [row[0] for row in resultado.fetchall()]
+    res = jsonify(arrayJsons)
+
+    return res
+
+
+@app.route("/decisiones", methods=["GET", "POST"])
+def decisionesdef():
+    # si hay POST es que el usuario ya recibió el form y nos lo envia
+    # if request.method == "POST":
+
+    if request.method == "POST":
+
+        # componenteid = request.args.get("componenteid", type=int)
+
+        # for accion in request.form.items():
+        #     print(accion[0][-1:])
+        #     print(accion[1])
+
+        componenteid = request.form["componenteid"]
+
+        for key, decision in request.form.items():
+            # print(f"{key}: {accion} -->  {componenteid}: {accion}")
+
             if "acciones" in key:
-                # FIXME: posible bug cuando el indice tenga >1 digitos
-                componente = key[9:-4]
-                print(f"{key}: {accion} --> {componente}: {accion}")
-                new_row = decisiones(
-                    tramoId=tramo_a_editar,
-                    activo="estrada_l_25",
-                    componente=componente,
-                    accion=accion,
+                idtipoaccion = key[-1:]
+
+                new_row = accion(
+                    fecha=date.today(),
+                    idcomponente=componenteid,
+                    idtipodeaccion=idtipoaccion,
+                    nombre=decision,
                 )
+
                 db.session.add(new_row)
 
         db.session.commit()
-
-        return redirect(url_for("forminsert"))
+        return redirect(url_for("decisionesdef"))
 
     #  renderizado de plantilla que se ejecuta cuando no recibimos POST. Es decir,
     #  cuando tenemos que enviarle al usuario el formulario
     #  para que el formulario "sepa" el tramo que vamos a editar lo recibiremos por GET
     return render_template(
-        "formularioDecisiones.html", tramoid=request.args.get("tramo", 1, type=int)
+        "formularioDecisiones.html",
+        componenteid=request.args.get("componenteid", 1, type=int),
     )
 
 
-@ app.route("/consultasActivos", methods=["GET", "POST"])
-# @login_required
-def consultasActivosdef():
-    if request.method == "GET":
-        # obtenemos resultados y los metemos en una var
-        texto = text(f""" SELECT json_build_object(
-                'type', 'Feature',
-                'id', id,
-                'nombre', nombre,
-                'descripcion', descripcion,
-                'idtramo', activo.idtramo
+@app.route("/activoycomponenteGeojson", methods=["GET"])
+def pgeojsondef():
+
+    texto1 = text(
+        f""" SELECT json_build_object(
+            'type', 'Feature',
+            'geometry',  ST_AsGeoJSON(ST_Transform(geom, 4326),15,0)::json,
+            'properties', json_build_object(
             )
-            FROM activo
-            where idTramo = {request.args.get("tramo",  type=int)}
-            """)
+        )
+        FROM activos2
+        where id = {request.args.get("id_activo", type=int)}
 
-        resultado = db.engine.execute(texto)
-        arrayJsons = [row[0] for row in resultado.fetchall()]
-
-    return render_template(
-        "consultasActivos.html", tramoid=request.args.get("tramo", 1, type=int), resultado=arrayJsons
+        """
     )
 
+    resultado1 = db.engine.execute(texto1)
+    activos = [row[0] for row in resultado1.fetchall()]
 
-@ app.route("/matriculas", methods=["GET"])
-# @login_required
-def getMatriculas():
-    #  consulta que devuelve la fila con ese id
-    row = estrada_l_25.query.filter_by(id=request.args.get("id_tramo"))
-    # print(row[0].matricula)
-    #  consulta que devuelve todas las matriculas iguales al anterior para pintarlas despues
-    consulta = estrada_l_25.query.filter_by(matricula=row[0].matricula)
-    lista = []
-    for tramo in consulta:
-        lista.append(tramo.id)
-    resultadoConsulta = jsonify(json_list=lista)
-    return resultadoConsulta
-
-
-@app.route("/paso3", methods=["GET"])
-def paso3():
-    return f'hello world al tramo {request.args.get("tramo", 1, type=int)}'
-
-
-@app.route("/consultasComponentes", methods=["GET"])
-def consultasComponentesdef():
-    if request.method == "GET":
-        # obtenemos resultados y los metemos en una var
-        texto = text(f""" SELECT json_build_object(
-                'type', 'Feature',
-                'id', id,
-                'nombre', nombre,
-                'descripcion', descripcion,
-                'idactivo', componente.idactivo
-            )
-            FROM componente
-            where idactivo = {request.args.get("activo",  type=int)}
-            """)
-
-        resultado = db.engine.execute(texto)
-        arrayJsons = [row[0] for row in resultado.fetchall()]
-
-    return render_template(
-        "consultasComponentes.html", tramoid=request.args.get("activo", 1, type=int), resultado=arrayJsons
+    texto = text(
+        f""" SELECT json_build_object(
+            'type', 'Feature',
+            'geometry',  ST_AsGeoJSON(ST_Transform(geom, 4326),15,0)::json
+        )
+        FROM componentes2
+        where id = {request.args.get("id_componente",  type=int)}
+        """
     )
+
+    resultado = db.engine.execute(texto)
+    componentes = [row[0] for row in resultado.fetchall()]
+
+    res = jsonify(activos=activos, componentes=componentes)
+
+    return res
 
 
 if __name__ == "__main__":

@@ -1,0 +1,51 @@
+<div>
+    <p class="text-white bg-dark">Está viendo las medidas de kpi asociadas al componente {{componenteid}} que pertenece
+        al activo
+        {{activoid}}</p>
+</div>
+
+
+<table id="tablaResultadosComponentes" class="table table-striped table-hover tablaScroll">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">ID medicion</th>
+            <th scope="col">Valor</th>
+            <th scope="col">Kpi</th>
+            <th scope="col">Actuaciones</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for x in resultado %}
+        <tr>
+            <td>{{loop.index}}</td>
+            <td>{{x.idMedicion}}</td>
+            <td>{{x.valor}}</td>
+            <td>{{x.nombreKpi}}</td>
+            <td>
+                <input type="button" class="btn btn-primary" onclick="abrepopup({{x.id}})" value="modificar">
+            </td>
+
+        </tr>
+        {% endfor %}
+
+
+    </tbody>
+
+</table>
+<script>
+    // popup para la edicion de tramo
+    function abrepopup(tramoid) {
+        //equivalente a pasarle la ruta por /, llamo a la funcion en vez de eso
+        //window.open(URL, name, specs, replace)
+        window.open('{{ url_for('decisionesdef') }}?componenteid={{ componenteid }}', '', 'width=800,height=500')
+    }
+</script>
+
+
+<button id="buttonComponentNav" onclick="escondeDetallesMuestraTabla()" class="btn btn-primary btn-sm">Volver a los
+    activos</button>
+
+<button id="buttonComponentNav" onclick="aConsultasComponentes({{activoid}})" class="btn btn-primary btn-sm">Volver a
+    los componentes del activo {{activoid}}</button>
