@@ -24,7 +24,8 @@
             <td>{{x.valor}}</td>
             <td>{{x.nombreKpi}}</td>
             <td>
-                <input type="button" class="btn btn-primary" onclick="abrepopup({{x.id}})" value="modificar">
+                <input type="button" class="btn bg-secondary text-white" onclick="abrepopup({{x.id}})"
+                    value="modificar">
             </td>
 
         </tr>
@@ -44,8 +45,10 @@
 </script>
 
 
-<button id="buttonComponentNav" onclick="escondeDetallesMuestraTabla()" class="btn btn-primary btn-sm">Volver a los
+<button id="buttonComponentNav" onclick="escondeDetallesMuestraTabla()" class="btn bg-secondary text-white">Volver
+    a los
     activos</button>
 
-<button id="buttonComponentNav" onclick="aConsultasComponentes({{activoid}})" class="btn btn-primary btn-sm">Volver a
+<button id="buttonComponentNav" onclick="aConsultasComponentes({{activoid}})" class="btn bg-secondary text-white">Volver
+    a
     los componentes del activo {{activoid}}</button>

@@ -1,7 +1,7 @@
 var ultimoComponente = ''
 var ultimoActivo = ''
 
-var estiloActivo2 = {
+var estiloActivo = {
     "color": "#ea04f9",
     "weight": 5,
     "opacity": 1
@@ -25,12 +25,6 @@ var tramo2Style = {
     "opacity": 1
 };
 
-var estiloActivo = {
-    "color": "#ea04f9",
-    "weight": 5,
-    "opacity": 1
-};
-
 
 
 
@@ -43,8 +37,6 @@ function dibujaGeojson(geojson, estilo) {
     }).addTo(map)
 
     return mapaPintado._leaflet_id
-    // layertramo = mapaPintadoPoint._leaflet_id
-
 }
 
 
@@ -96,7 +88,7 @@ function pedir_componente_geojson(id, activoid) {
         }, type: "GET", dataType: "json", success: function (response) {
             borrarGeojson(ultimoActivo)
             borrarGeojson(ultimoComponente)
-            ultimoActivo = dibujaGeojson(response["activos"], estiloActivo2)
+            ultimoActivo = dibujaGeojson(response["activos"], estiloActivo)
             ultimoComponente = dibujaGeojson(response["componentes"], estiloComponente)
             centrarMapa(response["componentes"], 19)
         }
@@ -184,7 +176,7 @@ function sendcheckboxes() {
         success: function (response) {
             borrarGeojson(ultimoActivo)
             borrarGeojson(ultimoComponente)
-            ultimoActivo = dibujaGeojson(response, estiloActivo2) // dibuja el tramo especifico  
+            ultimoActivo = dibujaGeojson(response, estiloActivo) // dibuja el tramo especifico  
             centrarMapa(response, 12)
         }
     });
@@ -214,7 +206,7 @@ function renderFormResults(response) {
             '<input type="radio" name="tramo" onclick="sendcheckboxes()" value="' + aux.id + '" ">' +
             `</td>` +
             '<td class="td">' +
-            `<input type="button" class="btn btn-primary" onclick="vercomponentes(${aux.id})" value="Ver asociados">` +
+            `<input type="button" class="btn bg-secondary text-white" onclick="vercomponentes(${aux.id})" value="Ver asociados">` +
             '</td>' +
             '</tr>';
         $("#tablaResultadosActivos > tbody").append(html);

@@ -42,7 +42,7 @@ def consultasGeoportal():
                 'nombre_activo', nombre,
                 'id_tramo', idtramo
             )
-            FROM activos2 a where a.idtramo = {req["tramo"]}
+            FROM activo a where a.idtramo = {req["tramo"]}
             """
         )
 
@@ -82,7 +82,7 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if user is None or not user.check_password(form.password.data):
             # print(f'user o pass invalidos {user}')
-            flash("Invalid username or password")
+            flash("El nombre de usuario o contraseña son incorrectos")
             return redirect(url_for("login"))
         # print('logueando...')
         login_user(user, remember=form.remember_me.data)
@@ -100,7 +100,7 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash("Congratulations, you are now a registered user!")
+        flash("Felicidades, es usted un usuario registrado!")
         return redirect(url_for("login"))
     return render_template("register.html", title="Register", form=form)
 
@@ -123,7 +123,7 @@ def consultasComponentesdef():
                 'nombre', nombre,
                 'id_activo', idactivo
             )
-            FROM componentes2
+            FROM componente
             where idactivo = {request.args.get("activo",  type=int)}
             """
         )
@@ -199,7 +199,7 @@ def paso2323():
             'properties', json_build_object(
             )
         )
-        FROM activos2
+        FROM activo
         where id = {request.args.get("id_tramo", type=int)}
 
         """
@@ -255,36 +255,36 @@ def decisionesdef():
 
 
 @app.route("/activoycomponenteGeojson", methods=["GET"])
-def pgeojsondef():
+def geojsondef():
 
-    texto1 = text(
+    consultaActivo = text(
         f""" SELECT json_build_object(
             'type', 'Feature',
             'geometry',  ST_AsGeoJSON(ST_Transform(geom, 4326),15,0)::json,
             'properties', json_build_object(
             )
         )
-        FROM activos2
+        FROM activo
         where id = {request.args.get("id_activo", type=int)}
 
         """
     )
 
-    resultado1 = db.engine.execute(texto1)
-    activos = [row[0] for row in resultado1.fetchall()]
+    geojsonActivo = db.engine.execute(consultaActivo)
+    activos = [row[0] for row in geojsonActivo.fetchall()]
 
-    texto = text(
+    consultaComponente = text(
         f""" SELECT json_build_object(
             'type', 'Feature',
             'geometry',  ST_AsGeoJSON(ST_Transform(geom, 4326),15,0)::json
         )
-        FROM componentes2
+        FROM componente
         where id = {request.args.get("id_componente",  type=int)}
         """
     )
 
-    resultado = db.engine.execute(texto)
-    componentes = [row[0] for row in resultado.fetchall()]
+    geojsonComponente = db.engine.execute(consultaComponente)
+    componentes = [row[0] for row in geojsonComponente.fetchall()]
 
     res = jsonify(activos=activos, componentes=componentes)
 

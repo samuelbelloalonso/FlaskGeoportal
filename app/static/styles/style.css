@@ -1,38 +1,47 @@
-    #map {
-      /* height: 550px; */
-      height: 90vh;
-    }
- 
-    /* .tablaResultados {
-        width: 100%;
-    } */
+#map {
+    /* height: 550px; */
+    height: 90vh;
+}
 
-    .tablaScroll table {
-        width: 100%;
-    }
 
-    .tablaScroll thead {
-        display: table;
-        width: calc(100% - 17px);
-    }
+/* .tablaResultados {
+    width: 100%;
+} */
 
-    .tablaScroll tbody {
-        display: block;
-        height: 280px;
-        overflow-y: scroll;
-    }
+.tablaScroll table {
+    width: 100%;
+}
 
-    .tablaScroll tr {
-        display: table;
-        width: 100%;
-    }
+.tablaScroll thead {
+    display: table;
+    width: calc(100% - 17px);
+}
 
-    .tablaScroll th,
-    .tablaScroll td {
-        width: 16%;
-        word-break: keep-all;
-    }
+.tablaScroll tbody {
+    display: block;
+    height: 280px;
+    overflow-y: scroll;
+}
 
-    #tablaResultadosComponentes tbody{
-        height: 50vh
-    }
+.tablaScroll tr {
+    display: table;
+    width: 100%;
+}
+
+.tablaScroll th,
+.tablaScroll td {
+    width: 16%;
+    word-break: keep-all;
+}
+
+#tablaResultadosComponentes tbody{
+    height: 50vh;
+}
+
+
+/* prueba a quitar el margin y/o el padding, a ver cual es el realmente necesario. putaputaputaputaputa */
+.no-gutters > .col, 
+.no-gutters > [class*="col-"] {
+    margin-right: 15px;
+    padding-right: 15px;
+}

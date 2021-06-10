@@ -10,7 +10,7 @@ login = LoginManager(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login.login_view = "login"
-
+login.login_message = u"Por favor autentíquese para poder usar la aplicación."
 from app import routes, models
 
 db.create_all()
