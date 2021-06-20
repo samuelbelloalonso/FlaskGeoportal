@@ -27,8 +27,6 @@ var tramo2Style = {
 
 
 
-
-
 function dibujaGeojson(geojson, estilo) {
     if (geojson.length == 0) { return }
 
@@ -53,9 +51,9 @@ function borrarGeojson(geojson) {
 
 
 
-function centrarMapa(tramo, zoom) {
-    var requiredArea = L.geoJson(tramo).getBounds();
-    var cord = tramo[0].geometry.coordinates;
+function centrarMapa(geojson, zoom) {
+    var requiredArea = L.geoJson(geojson).getBounds();
+    var cord = geojson[0].geometry.coordinates;
     if (Array.isArray(cord[0])) {
         map.setView(cord[0][0][1].reverse(), zoom);
     }
@@ -78,13 +76,13 @@ function verKpisConMediciones(idComponente, idActivo) {
 }
 
 
-function pedir_componente_geojson(id, activoid) {
+function pedir_componente_geojson(idcomponente, idactivo) {
     $.ajax({
         url: "/activoycomponenteGeojson", data: {
             id_componente:
-                id,
+                idcomponente,
             id_activo:
-                activoid
+                idactivo
         }, type: "GET", dataType: "json", success: function (response) {
             borrarGeojson(ultimoActivo)
             borrarGeojson(ultimoComponente)
@@ -97,113 +95,20 @@ function pedir_componente_geojson(id, activoid) {
 
 
 
-
-function aConsultasComponentes(id) {
-    $.get(`/consultasComponentes?activo=${id}`, function (response) {
-        $('#injectTarget').html(response)
-    });
-}
-
-function renderFormResults(response) {
+function llenarTablaActivos(response) {
     var len = Object.keys(response.tramos).length;
     $("#tablaResultadosActivos > tbody").empty()
     for (i = 0; i < len; i++) {
         var aux = response.tramos[i];
         //tr inicia una fila nueva
+        $("#mensajeNavegacion").text("Está viendo los activos asociados al tramo " + response.tramoNombre)
         html = `<tr class="idEstrada">` +
             `<td>${i + 1}</td>` +
             `<td>${aux.id}</td>` +
             `<td>${aux.nombre_activo}</td>` +
             `<td>${aux.id_tramo}</td>` +
             `<td class="td">` +
-            '<input type="radio" name="tramo" onclick="sendcheckboxes()" value="' + aux.id + '" ">' +
-            `</td>` +
-            '<td class="td">' +
-            `<input type="button" class="btn btn-primary" onclick="vercomponentes(${aux.id})" value="Ver asociados">` +
-            '</td>' +
-            '</tr>';
-        $("#tablaResultadosActivos > tbody").append(html);
-    }
-    $("#divAcciones").hide();
-    $("#divResultados").scrollTop(0).show();
-}
-
-function escondeDetallesMuestraTabla() {
-    $("#divResultados").show();
-    $("#divAcciones").hide();
-}
-
-
-function vercomponentes(id) {
-    $("button").prop("disabled", true)
-    $.get(`/consultasComponentes?activo=${id}`, function (response) {
-        $("#injectTarget").html(response);
-        $("#divResultados").hide();
-        $("#divAcciones").scrollTop(0).show();
-        $("button").prop("disabled", false)
-    });
-}
-
-
-
-function ajaxRenderizado() {
-    $.ajax({
-        url: "/consultasTramos2",
-        data: $("form").serialize(),
-        type: "POST",
-        dataType: "json",
-        success: renderFormResults
-    })
-}
-
-
-function sendcheckboxes() {
-    //formar lista de id con los que tienen el check activado
-    var checked = []
-    var id_checkbox = ''
-    $("input[name='tramo']:checked").each(function () {
-        checked.push(parseInt($(this).val()));
-        id_checkbox = parseInt($(this).val())
-    });
-
-    $.ajax({
-        url: "/activosGeojson",
-        data: {
-            id_tramo: id_checkbox,
-        },
-        type: "GET",
-        dataType: "json",
-        success: function (response) {
-            borrarGeojson(ultimoActivo)
-            borrarGeojson(ultimoComponente)
-            ultimoActivo = dibujaGeojson(response, estiloActivo) // dibuja el tramo especifico  
-            centrarMapa(response, 12)
-        }
-    });
-
-}
-
-function escondeDetallesMuestraTabla() {
-    $("#divResultados").show();
-    $("#divAcciones").hide();
-}
-
-//Función para renderizar el resultado de la peticion ajax
-//devuelve la consulta
-//borra la tabla y la reescribe
-function renderFormResults(response) {
-    var len = Object.keys(response.tramos).length;
-    $("#tablaResultadosActivos > tbody").empty()
-    for (i = 0; i < len; i++) {
-        var aux = response.tramos[i];
-        //tr inicia una fila nueva
-        html = `<tr class="idEstrada">` +
-            `<td>${i + 1}</td>` +
-            `<td>${aux.id}</td>` +
-            `<td>${aux.nombre_activo}</td>` +
-            `<td>${aux.id_tramo}</td>` +
-            `<td class="td">` +
-            '<input type="radio" name="tramo" onclick="sendcheckboxes()" value="' + aux.id + '" ">' +
+            '<input type="radio" name="tramo" onclick="dibujaYCentraActivo(' + aux.id + ')" value="' + aux.id + '" ">' +
             `</td>` +
             '<td class="td">' +
             `<input type="button" class="btn bg-secondary text-white" onclick="vercomponentes(${aux.id})" value="Ver asociados">` +
@@ -215,40 +120,72 @@ function renderFormResults(response) {
     $("#divResultados").scrollTop(0).show();
 }
 
+function escondeDetallesMuestraTabla() {
+    $("#divResultados").show();
+    $("#divAcciones").hide();
+}
 
-//peticion ajax mandandole el tramo del que queremos obtener informacion
-$(function infoTramo() {
-    //click en enviar
-    $("#ajaxTrigger_form").click(function () {
-        $.ajax({
-            url: "/geoportal",
-            data: $("form").serialize(),
-            type: "POST",
-            dataType: "json",
-            success: renderFormResults
-        });
+
+function vercomponentes(idactivo) {
+    $("button").prop("disabled", true)
+    $.get(`/consultasComponentes?activo=${idactivo}`, function (response) {
+        $("#injectTarget").html(response);
+        $("#divResultados").hide();
+        $("#divAcciones").scrollTop(0).show();
+        $("button").prop("disabled", false)
     });
-});
+}
 
 
-function aConsultasComponentes(id) {
-    $.get(`/consultasComponentes?activo=${id}`, function (response) {
-        $('#injectTarget').html(response)
+function dibujaYCentraActivo(idtramo) {
+    $.ajax({
+        url: "/activosGeojson",
+        data: {
+            // id_tramo: id_checkbox,
+            id_tramo: idtramo
+        },
+        type: "GET",
+        dataType: "json",
+        success: function (response) {
+            borrarGeojson(ultimoActivo)
+            borrarGeojson(ultimoComponente)
+            ultimoActivo = dibujaGeojson(response, estiloActivo) // dibuja el tramo especifico  
+            centrarMapa(response, 12)
+        }
     });
 }
 
 //peticion ajax mandandole el tramo del que queremos obtener informacion
-$(function () {
-    //click en enviar
-    $("#ajaxTrigger_form").click(function () {
-        $.ajax({
-            url: "/geoportal",
-            data: $("form").serialize(),
-            type: "POST",
-            dataType: "json",
-            success: renderFormResults
-        });
-    });
-});
 
+function verActivosDeTramo() {
+    $.ajax({
+        url: "/geoportal",
+        data: $("form").serialize(),
+        type: "POST",
+        dataType: "json",
+        success: llenarTablaActivos
+    });
+}
+
+function enviarAccionComponente() {
+    $.ajax({
+        url: "/decisiones",
+        data: $("form").serialize(),
+        method: "POST",
+        success: function () {
+            self.close()
+        }
+    })
+}
+
+
+function abreAcciones(idcomponente) {
+    //equivalente a pasarle la ruta por /, llamo a la funcion en vez de eso
+    //window.open(URL, name, specs, replace)
+    window.open('/decisiones?componenteid=' + idcomponente, '', 'width=800,height=500')
+}
+
+function resetMapZoom() {
+    map.setView([42.7674234, -7.8984065], 7.5)
+}
 

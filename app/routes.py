@@ -45,10 +45,11 @@ def consultasGeoportal():
             FROM activo a where a.idtramo = {req["tramo"]}
             """
         )
-
         resultado = db.engine.execute(texto)
         arrayJsons = [row[0] for row in resultado.fetchall()]
-        return jsonify(tramos=arrayJsons)
+        print(arrayJsons)
+        tramoNombre = arrayJsons[0]["id_tramo"]
+        return jsonify(tramos=arrayJsons, tramoNombre=tramoNombre)
 
     texto = text(
         """ SELECT json_build_object(
@@ -66,7 +67,6 @@ def consultasGeoportal():
     )
     resultado = db.engine.execute(texto)
     arrayResultado1 = [row[0] for row in resultado.fetchall()]
-
     return render_template(
         "geoportal.html",
         tramosJson=arrayResultado1,
@@ -113,6 +113,7 @@ def logout():
 
 
 @app.route("/consultasComponentes", methods=["GET"])
+@login_required
 def consultasComponentesdef():
     if request.method == "GET":
         # obtenemos resultados y los metemos en una var
@@ -139,6 +140,7 @@ def consultasComponentesdef():
 
 
 @app.route("/consultasKpisConMediciones", methods=["GET"])
+@login_required
 def consultasKpisConMedicionedef():
     if request.method == "GET":
         # obtenemos resultados y los metemos en una var
@@ -168,28 +170,8 @@ def consultasKpisConMedicionedef():
     )
 
 
-@app.route("/componentesGeojson", methods=["GET"])
-def consultasComponentesGeojsondef():
-    if request.method == "GET":
-        # obtenemos resultados y los metemos en una var
-        texto = text(
-            f""" SELECT json_build_object(
-                'type', 'Feature',
-                'geometry',  ST_AsGeoJSON(ST_Transform(geom, 4326),15,0)::json
-            )
-            FROM componentes2
-            where id = {request.args.get("id_componente",  type=int)}
-            """
-        )
-
-        resultado = db.engine.execute(texto)
-        arrayJsons = [row[0] for row in resultado.fetchall()]
-        resultado = jsonify(arrayJsons)
-
-    return resultado
-
-
 @app.route("/activosGeojson", methods=["GET"])
+@login_required
 def paso2323():
 
     texto = text(
@@ -213,6 +195,7 @@ def paso2323():
 
 
 @app.route("/decisiones", methods=["GET", "POST"])
+@login_required
 def decisionesdef():
     # si hay POST es que el usuario ya recibió el form y nos lo envia
     # if request.method == "POST":
@@ -255,6 +238,7 @@ def decisionesdef():
 
 
 @app.route("/activoycomponenteGeojson", methods=["GET"])
+@login_required
 def geojsondef():
 
     consultaActivo = text(

@@ -9,10 +9,10 @@
     <thead>
         <tr>
             <th scope="col">#</th>
-            <th scope="col">ID medicion</th>
+            <th scope="col">Id</th>
             <th scope="col">Valor</th>
             <th scope="col">Kpi</th>
-            <th scope="col">Actuaciones</th>
+            <th scope="col">Acciones</th>
         </tr>
     </thead>
     <tbody>
@@ -24,7 +24,7 @@
             <td>{{x.valor}}</td>
             <td>{{x.nombreKpi}}</td>
             <td>
-                <input type="button" class="btn bg-secondary text-white" onclick="abrepopup({{x.id}})"
+                <input type="button" class="btn bg-secondary text-white" onclick="abreAcciones('{{componenteid}}')"
                     value="modificar">
             </td>
 
@@ -35,20 +35,12 @@
     </tbody>
 
 </table>
-<script>
-    // popup para la edicion de tramo
-    function abrepopup(tramoid) {
-        //equivalente a pasarle la ruta por /, llamo a la funcion en vez de eso
-        //window.open(URL, name, specs, replace)
-        window.open('{{ url_for('decisionesdef') }}?componenteid={{ componenteid }}', '', 'width=800,height=500')
-    }
-</script>
 
 
 <button id="buttonComponentNav" onclick="escondeDetallesMuestraTabla()" class="btn bg-secondary text-white">Volver
     a los
     activos</button>
 
-<button id="buttonComponentNav" onclick="aConsultasComponentes({{activoid}})" class="btn bg-secondary text-white">Volver
+<button id="buttonComponentNav" onclick="vercomponentes({{activoid}})" class="btn bg-secondary text-white">Volver
     a
     los componentes del activo {{activoid}}</button>
