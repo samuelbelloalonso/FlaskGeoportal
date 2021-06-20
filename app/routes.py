@@ -47,9 +47,11 @@ def consultasGeoportal():
         )
         resultado = db.engine.execute(texto)
         arrayJsons = [row[0] for row in resultado.fetchall()]
-        print(arrayJsons)
-        tramoNombre = arrayJsons[0]["id_tramo"]
-        return jsonify(tramos=arrayJsons, tramoNombre=tramoNombre)
+        tramoId = arrayJsons[0]["id_tramo"]
+        # return jsonify(tramos=arrayJsons, tramoNombre=tramoNombre)
+        return render_template(
+            "consultasActivos.html", activos=arrayJsons, tramoId=tramoId
+        )
 
     texto = text(
         """ SELECT json_build_object(

@@ -24,11 +24,11 @@
             <td>{{x.nombre}}</td>
             <!-- <td>{{x.id_activo}}</td> -->
             <td>
-                <input type="radio" name="idComponente" onclick="pedir_componente_geojson({{x.id}},{{activoid}})">
+                <input type="radio" name="idComponente" onclick="dibujaYCentraActivoYComponente({{x.id}},{{activoid}})">
             </td>
             <td>
                 <input type="button" class="btn bg-secondary text-white"
-                    onclick="verKpisConMediciones({{x.id}},{{activoid}})" value="Ver asociados">
+                    onclick="pedirKpisConMediciones({{x.id}},{{activoid}})" value="Ver asociados">
             </td>
         </tr>
         {% endfor %}
