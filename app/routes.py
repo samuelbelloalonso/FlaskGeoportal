@@ -54,19 +54,21 @@ def consultasGeoportal():
         )
 
     texto = text(
-        """ SELECT json_build_object(
+        f""" SELECT json_build_object(
         'type', 'Feature',
         'geometry',  ST_AsGeoJSON(ST_Transform(geom, 4326),15,0)::json,
         'properties', json_build_object(
-            'Tramo', nombre,
-            'id', id
+            'Tramo', t.nombre,
+            'id', t.id
         )
     )
-    FROM tramos2
+    FROM tramos t join usuario_tramos ut on t.id = ut.id_tramo
+            where ut.id_user = {current_user.id}
     group by nombre, geom,id
     order by nombre
     """
     )
+    print(current_user.id)
     resultado = db.engine.execute(texto)
     arrayResultado1 = [row[0] for row in resultado.fetchall()]
     return render_template(
@@ -203,12 +205,6 @@ def decisionesdef():
     # if request.method == "POST":
 
     if request.method == "POST":
-
-        # componenteid = request.args.get("componenteid", type=int)
-
-        # for accion in request.form.items():
-        #     print(accion[0][-1:])
-        #     print(accion[1])
 
         componenteid = request.form["componenteid"]
 
